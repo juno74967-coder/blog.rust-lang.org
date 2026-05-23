@@ -7,7 +7,8 @@ on:
 
 env:
   # renovate: datasource=github-tags depName=rust lookupName=rust-lang/rust
-  RUST_VERSION: 1.93.1
+  RUST_VERSION: 1.95.0
+  ZOLA_VERSION: 29540e9897dbe8aca388b13f7bdf615985f6ca2c
 
 jobs:
   lint:
@@ -18,7 +19,7 @@ jobs:
       - run: rustup override set ${{ env.RUST_VERSION }}
       - run: rustup component add clippy
       - run: rustup component add rustfmt
-      - uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2.8.2
+      - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
 
       - run: cargo clippy --workspace -- -D warnings
       - run: cargo fmt --check --all
@@ -28,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-      - uses: crate-ci/typos@631208b7aac2daa8b707f55e7331f9112b0e062d # v1.44.0
+      - uses: crate-ci/typos@bbaefadf97b0ec5fdc942684b647f1a6ab250274 # v1.46.0
 
   build:
     runs-on: ubuntu-latest
@@ -36,9 +37,11 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
       - run: rustup override set ${{ env.RUST_VERSION }}
-      - uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2.8.2
+      - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
+        with:
+          env-vars: CARGO RUST ZOLA_VERSION
       - name: Install Zola
-        run: cargo install --locked --git https://github.com/getzola/zola --rev 45d3f8d6285f0b47013c5fa31eb405332118af8b
+        run: cargo install --locked --git https://github.com/getzola/zola --rev ${{ env.ZOLA_VERSION }}
 
       - run: zola build
       - run: cp CNAME ./public/
@@ -57,7 +60,7 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
       - run: rustup override set ${{ env.RUST_VERSION }}
-      - uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2.8.2
+      - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
 
       - run: cargo test -p front_matter -- --include-ignored date_is_set
 
